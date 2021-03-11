@@ -17,7 +17,9 @@ Parse.Cloud.define('signup', (request) => new Promise((resolve, reject) => {
   user.set('lastname', String(request.params.lastname));
   // user.set('username', String(request.params.username));
   user.set('password', String(request.params.password));
-  user.set('email', String(request.params.email));
+  if (String(request.params.email) !== '') {
+    user.set('email', String(request.params.email));
+  }
   user.set('organization', String(request.params.organization));
   user.set('phonenumber', String(request.params.phonenumber));
 
@@ -61,12 +63,16 @@ Parse.Cloud.define('signup', (request) => new Promise((resolve, reject) => {
           role.getUsers().add(aclUser);
           role.save(null, { useMasterKey: true });
           resolve(aclUser);
-        }, (error) => {
+        }).catch((error) => {
+          console.log(`Error: ${error.code} ${error.message}`);
           reject(error);
         });
       });
+    }).catch((error) => {
+      console.log(`Error: ${error.code} ${error.message}`);
+      reject(error);
     });
-  }, (error) => {
+  }).catch((error) => {
     console.log(`Error: ${error.code} ${error.message}`); // eslint-disable-line
     reject(error);
   });
